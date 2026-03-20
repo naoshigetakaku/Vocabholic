@@ -90,28 +90,38 @@
 
     <!-- RESULT SCREEN -->
     <div id="quiz-result-screen" style="display:none">
-      <div class="qr-inner">
-        <div class="qr-title">Results</div>
-        <div class="qr-stats">
-          <div class="qr-stat">
-            <div class="qr-stat-num correct" id="qr-correct">0</div>
-            <div class="qr-stat-label">Correct</div>
+      <div class="qr-scroll">
+        <div class="qr-inner">
+          <div class="qr-title">Results</div>
+          <div class="qr-pct" id="qr-pct">0%</div>
+          <div class="qr-stats">
+            <div class="qr-stat">
+              <div class="qr-stat-num correct" id="qr-correct">0</div>
+              <div class="qr-stat-label">Correct</div>
+            </div>
+            <div class="qr-stat-divider"></div>
+            <div class="qr-stat">
+              <div class="qr-stat-num wrong" id="qr-wrong">0</div>
+              <div class="qr-stat-label">Wrong</div>
+            </div>
+            <div class="qr-stat-divider"></div>
+            <div class="qr-stat">
+              <div class="qr-stat-num total" id="qr-total">0</div>
+              <div class="qr-stat-label">Total</div>
+            </div>
           </div>
-          <div class="qr-stat-divider"></div>
-          <div class="qr-stat">
-            <div class="qr-stat-num wrong" id="qr-wrong">0</div>
-            <div class="qr-stat-label">Wrong</div>
+          <div class="qr-btns">
+            <button class="qr-btn-secondary" onclick="showQuizStart()">Change Settings</button>
+            <button class="qr-btn-primary"   onclick="startQuiz()">Try Again</button>
           </div>
-          <div class="qr-stat-divider"></div>
-          <div class="qr-stat">
-            <div class="qr-stat-num total" id="qr-total">0</div>
-            <div class="qr-stat-label">Total</div>
+          <!-- Missed words toggle -->
+          <div class="qr-wrong-toggle-wrap" id="qr-wrong-toggle-wrap">
+            <button class="qr-wrong-toggle-btn" id="qr-wrong-toggle-btn" onclick="toggleMissedWords()">
+              See incorrect answers
+              <svg id="qr-toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="qr-wrong-list" class="qr-wrong-list" style="display:none"></div>
           </div>
-        </div>
-        <div class="qr-pct" id="qr-pct">0%</div>
-        <div class="qr-btns">
-          <button class="qr-btn-secondary" onclick="showQuizStart()">Change Settings</button>
-          <button class="qr-btn-primary"   onclick="startQuiz()">Try Again</button>
         </div>
       </div>
     </div>
