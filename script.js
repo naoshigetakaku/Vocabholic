@@ -38,12 +38,18 @@ async function fetchCambridgeData(word) {
     const res  = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
     const json = await res.json();
     const doc  = new DOMParser().parseFromString(json.contents || '', 'text/html');
-    const usageEls = [...doc.querySelectorAll('.eg .deg, .examp .deg')].slice(0, 3);
+    const usageEls = [...doc.querySelectorAll('.eg .deg, .examp .deg')].slice(0, 6);
+    // Each element may itself contain multiple pipe-joined sentences; flatten and take first 3
+    const usageRaw = usageEls.map(e => e.textContent.trim()).filter(Boolean);
+    const usage = usageRaw
+      .flatMap(u => u.split(/\s*\|\s*/))
+      .map(u => u.trim()).filter(Boolean)
+      .slice(0, 3);
     return {
-      type:  doc.querySelector('.pos')?.textContent.trim()         || '',
-      def:   doc.querySelector('.def')?.textContent.trim()         || '',
-      jp:    doc.querySelector('.trans.dtrans')?.textContent.trim() || '',
-      usage: usageEls.map(e => e.textContent.trim()).filter(Boolean),
+      type:  doc.querySelector('.pos')?.textContent.trim()          || '',
+      def:   doc.querySelector('.def')?.textContent.trim()          || '',
+      jp:    doc.querySelector('.trans.dtrans')?.textContent.trim()  || '',
+      usage,
     };
   } catch { return null; }
 }
@@ -187,12 +193,19 @@ function makeCardSlide(w) {
   el.dataset.word = w.word;
   el.dataset.status = st;
 
-  // Normalize usage — handle plain string, array, or accidentally stringified JSON
+  // Normalize usage — handle plain string, array, pipe-joined, or stringified JSON
   let usageArr = w.usage;
   if (typeof usageArr === 'string') {
-    try { usageArr = JSON.parse(usageArr); } catch { usageArr = [usageArr]; }
+    try { usageArr = JSON.parse(usageArr); } catch {
+      // split on pipe separator (common when examples are scraped as one block)
+      usageArr = usageArr.split(/\s*\|\s*/).filter(Boolean);
+    }
   }
-  if (!Array.isArray(usageArr)) usageArr = usageArr ? [usageArr] : [];
+  if (!Array.isArray(usageArr)) usageArr = usageArr ? [String(usageArr)] : [];
+  // Also handle arrays that somehow contain a single pipe-joined string
+  if (usageArr.length === 1 && usageArr[0].includes('|')) {
+    usageArr = usageArr[0].split(/\s*\|\s*/).filter(Boolean);
+  }
   const examples = usageArr.slice(0, 3);
   const usageHTML = examples.length
     ? `<div class="section-label" style="margin-top:2px">Examples</div>
