@@ -38,13 +38,10 @@ async function fetchCambridgeData(word) {
     const res  = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
     const json = await res.json();
     const doc  = new DOMParser().parseFromString(json.contents || '', 'text/html');
-    const usageEls = [...doc.querySelectorAll('.eg .deg, .examp .deg')].slice(0, 6);
-    // Each element may itself contain multiple pipe-joined sentences; flatten and take first 3
-    const usageRaw = usageEls.map(e => e.textContent.trim()).filter(Boolean);
-    const usage = usageRaw
-      .flatMap(u => u.split(/\s*\|\s*/))
-      .map(u => u.trim()).filter(Boolean)
-      .slice(0, 3);
+    const usageEl = doc.querySelector('.eg .deg, .examp .deg');
+    const usageText = usageEl ? usageEl.textContent.trim() : '';
+    // Split on pipe in case multiple sentences are joined
+    const usage = usageText ? [usageText.split(/\s*\|\s*/)[0].trim()].filter(Boolean) : [];
     return {
       type:  doc.querySelector('.pos')?.textContent.trim()          || '',
       def:   doc.querySelector('.def')?.textContent.trim()          || '',
@@ -193,23 +190,20 @@ function makeCardSlide(w) {
   el.dataset.word = w.word;
   el.dataset.status = st;
 
-  // Normalize usage — handle plain string, array, pipe-joined, or stringified JSON
-  let usageArr = w.usage;
-  if (typeof usageArr === 'string') {
-    try { usageArr = JSON.parse(usageArr); } catch {
-      // split on pipe separator (common when examples are scraped as one block)
-      usageArr = usageArr.split(/\s*\|\s*/).filter(Boolean);
-    }
+  // Flatten usage — data is often stored as ["s1 | s2 | s3"] or "s1 | s2 | s3"
+  let rawUsage = w.usage;
+  if (typeof rawUsage === 'string') {
+    try { rawUsage = JSON.parse(rawUsage); } catch { rawUsage = [rawUsage]; }
   }
-  if (!Array.isArray(usageArr)) usageArr = usageArr ? [String(usageArr)] : [];
-  // Also handle arrays that somehow contain a single pipe-joined string
-  if (usageArr.length === 1 && usageArr[0].includes('|')) {
-    usageArr = usageArr[0].split(/\s*\|\s*/).filter(Boolean);
-  }
-  const examples = usageArr.slice(0, 3);
+  if (!Array.isArray(rawUsage)) rawUsage = rawUsage ? [String(rawUsage)] : [];
+  // Each array element may itself be pipe-joined — flatten all, take up to 3
+  const examples = rawUsage
+    .flatMap(s => String(s).split('|'))
+    .map(s => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
   const usageHTML = examples.length
-    ? `<div class="section-label" style="margin-top:2px">Examples</div>
-       ${examples.map(u => `<div class="usage-ex">${escHtml(u)}</div>`).join('')}`
+    ? `<div class="section-label">Examples</div>${examples.map(u => `<div class="usage-ex">${escHtml(u)}</div>`).join('')}`
     : '';
 
   const youglishURL = `https://youglish.com/pronounce/${encodeURIComponent(w.word)}/english`;
