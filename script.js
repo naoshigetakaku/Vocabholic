@@ -190,20 +190,21 @@ function makeCardSlide(w) {
   el.dataset.word = w.word;
   el.dataset.status = st;
 
-  // Flatten usage — data is often stored as ["s1 | s2 | s3"] or "s1 | s2 | s3"
+  // Flatten usage — handles ["s1.|s2.|s3"] ["s1 | s2"] or plain strings
   let rawUsage = w.usage;
   if (typeof rawUsage === 'string') {
     try { rawUsage = JSON.parse(rawUsage); } catch { rawUsage = [rawUsage]; }
   }
   if (!Array.isArray(rawUsage)) rawUsage = rawUsage ? [String(rawUsage)] : [];
-  // Each array element may itself be pipe-joined — flatten all, take up to 3
   const examples = rawUsage
-    .flatMap(s => String(s).split('|'))
+    .flatMap(s => String(s).split(/\s*[|｜]\s*/))  // ASCII pipe and full-width pipe
     .map(s => s.trim())
     .filter(Boolean)
     .slice(0, 3);
   const usageHTML = examples.length
-    ? `<div class="section-label">Examples</div>${examples.map(u => `<div class="usage-ex">${escHtml(u)}</div>`).join('')}`
+    ? `<div class="section-label">Examples</div>${examples.map(u =>
+        `<div class="usage-ex">${escHtml(u).replace(/\|/g, '</div><div class="usage-ex">')}</div>`
+      ).join('')}`
     : '';
 
   const youglishURL = `https://youglish.com/pronounce/${encodeURIComponent(w.word)}/english`;
