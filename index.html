@@ -14,7 +14,7 @@
 <div id="app">
 
   <header id="header">
-    <div class="logo">Vocab<span>holic</span></div>
+    <span class="logo-text">Vocab<span class="logo-accent">holic</span></span>
     <div class="header-right">
       <span id="word-count-badge">0 words</span>
       <button class="icon-btn" id="open-manager-btn" aria-label="Word Manager">
@@ -26,30 +26,23 @@
       </button>
     </div>
   </header>
-
-  <!-- FILTER BAR — only shown in explore mode -->
   <div id="filter-bar">
-    <div class="filter-segment" id="filter-segment">
+    <div class="filter-segment">
       <button class="fseg-btn" id="fseg-unknown" onclick="toggleFilter('unknown')">
-        <span class="fseg-dot" style="background:var(--unknown)"></span>
-        Unknown
+        <span class="fseg-dot" style="background:var(--unknown)"></span>Unknown
       </button>
       <div class="fseg-divider"></div>
       <button class="fseg-btn" id="fseg-known" onclick="toggleFilter('known')">
-        <span class="fseg-dot" style="background:var(--know)"></span>
-        Known
+        <span class="fseg-dot" style="background:var(--know)"></span>Known
       </button>
     </div>
   </div>
 
-  <!-- EXPLORE VIEW -->
   <div class="view active" id="explore-view">
     <div id="card-feed"></div>
   </div>
 
-  <!-- QUIZ VIEW -->
   <div class="view" id="quiz-view">
-    <!-- START SCREEN -->
     <div id="quiz-start-screen">
       <div class="qs-inner">
         <div class="qs-title">Quiz Me</div>
@@ -72,7 +65,6 @@
       </div>
     </div>
 
-    <!-- ACTIVE QUIZ -->
     <div id="quiz-active" style="display:none">
       <div id="quiz-header">
         <div class="qh-row">
@@ -88,7 +80,6 @@
       <div id="quiz-body"></div>
     </div>
 
-    <!-- RESULT SCREEN -->
     <div id="quiz-result-screen" style="display:none">
       <div class="qr-scroll">
         <div class="qr-inner">
@@ -114,7 +105,6 @@
             <button class="qr-btn-secondary" onclick="showQuizStart()">Change Settings</button>
             <button class="qr-btn-primary"   onclick="startQuiz()">Try Again</button>
           </div>
-          <!-- Missed words toggle -->
           <div class="qr-wrong-toggle-wrap" id="qr-wrong-toggle-wrap">
             <button class="qr-wrong-toggle-btn" id="qr-wrong-toggle-btn" onclick="toggleMissedWords()">
               See incorrect answers
@@ -127,7 +117,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV TABS -->
   <nav id="mode-tabs">
     <button class="tab active" id="tab-explore" onclick="switchView('explore')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -149,7 +138,6 @@
 
 </div>
 
-<!-- WORD MANAGER MODAL -->
 <div id="modal-overlay">
   <div id="word-manager">
     <div id="wm-header">
@@ -165,12 +153,12 @@
     <div id="wm-body">
       <div id="import-panel">
         <div class="import-info-box">
-          <strong>Word-only TSV</strong> — one word per line.<br>
+          <strong>Word-only list</strong> — one word per line.<br>
           Japanese, type, definition &amp; examples are auto-fetched from Cambridge Dictionary.
         </div>
         <div class="import-drop" id="drop-zone" onclick="document.getElementById('file-input').click()">
           <svg class="drop-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <p><strong>Upload TSV / TXT file</strong></p>
+          <p><strong>Upload TXT / TSV file</strong></p>
           <p>or paste below</p>
         </div>
         <input type="file" id="file-input" accept=".tsv,.txt,.csv">
@@ -203,7 +191,6 @@
   </div>
 </div>
 
-<!-- PASSWORD DIALOG -->
 <div id="pw-overlay">
   <div id="pw-modal">
     <p>Enter password to clear all words</p>
